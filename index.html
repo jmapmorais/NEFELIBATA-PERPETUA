@@ -1,64 +1,322 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-        <title>João Morais</title>
-        <meta name="description" content="">
-        <link rel="stylesheet" href="./styles.css">
-    </head>
-    <body data-site-url="https://www.joaomorais.net/">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEFELIBATA PERPETUA</title>
+    <style>
+        :root {
+            --path: path("M 0,0 m -320, 0 a 320,180 0 1,0 640,0 a 320,180 0 1,0 -640,0");
+            --speed: 35s;
+            --fade-speed: 0.7s; 
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            background-color: #ffffff;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            overflow: hidden; /* Locks scrolling before the click */
+        }
+
+        /* =========================================
+           LAYER 1: BOTTOM (THE FIXED ARTWORK)
+           ========================================= */
+        .container {
+            position: fixed; 
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            width: 380px; 
+            height: 380px;
+            cursor: pointer; 
+            
+            /* The Fixes: Locks everything inside this to Layer 1 */
+            z-index: 1; 
+            isolation: isolate; 
+        }
+
+        .logo {
+            position: relative;
+            width: 380px; 
+            height: 380px;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            z-index: 1; /* Sits behind the spinning text */
+        }
+
+        @media (max-width: 900px) {
+            .logo { transform: scale(calc(100vw / 900)); }
+        }
+
+        .logo img {
+            position: absolute; 
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%); 
+            max-width: 100%; height: auto;
+            transition: opacity var(--fade-speed) ease; 
+        }
+
+        #logo-img-overlay { opacity: 0; }
+        .logo.swapped #logo-img-base { opacity: 0; }
+        .logo.swapped #logo-img-overlay { opacity: 1; }
+
+        .char {
+            position: absolute;
+            top: 50%; left: 50%;
+            z-index: 2; /* Sits over the logo, but strictly trapped inside Layer 1 */
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #333;
+            white-space: nowrap;
+            offset-path: var(--path);
+            offset-rotate: 0deg; 
+            animation: move var(--speed) linear infinite;
+        }
+
+        @keyframes move {
+            0% { offset-distance: 100%; }
+            100% { offset-distance: 0%; }
+        }
+
+        /* =========================================
+   LAYER 2: MIDDLE (FULL-WIDTH FLOATING ASSETS c1-c6)
+   ========================================= */
+.floating-layer {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    
+    /* Forced high above Layer 1 */
+    z-index: 50; 
+    
+    pointer-events: none; /* Let clicks pass through to the container */
+    overflow: visible;
+    
+    /* FIX 1: Set initial opacity to 0 so it stays hidden until the click */
+    opacity: 0; 
+    transition: opacity var(--fade-speed) ease;
+}
+
+.floating-layer.visible {
+    opacity: 0.85;
+}
+
+.float-img {
+    position: absolute;
+    top: 0;
+    left: 0; 
+    width: 100%; 
+    height: auto; 
+    
+    /* FIX 2: Explicit animation properties to prevent the 0s shorthand bug */
+    animation-name: floatUp;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes floatUp {
+    from { transform: translateY(110vh); } 
+    to { transform: translateY(-110vh); }  
+}
+
+.float-img:nth-child(1) { animation-duration: 145s; animation-delay: -10s; }
+/* .float-img:nth-child(2) { animation-duration: 65s; animation-delay: -30s; }
+.float-img:nth-child(3) { animation-duration: 50s; animation-delay: -5s; }
+.float-img:nth-child(4) { animation-duration: 75s; animation-delay: -40s; }
+.float-img:nth-child(5) { animation-duration: 140s; animation-delay: -15s; }
+.float-img:nth-child(6) { animation-duration: 55s; animation-delay: -25s; }
+      
+
+
+        /* =========================================
+           LAYER 3: TOP (SCROLLABLE TEXT OVERLAY)
+           ========================================= */
+        .content-wrapper {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            
+            /* Forced highest layer */
+            z-index: 100; 
+            
+            pointer-events: none; 
+        }
+
+        .hidden-text {
+            width: 90%;
+            max-width: 800px;
+            margin-top: 10vh; 
+            margin-bottom: 10vh; 
+            
+            text-align: center;
+            font-size: 16px;
+            color: #333;
+            line-height: 1.5;
+            
+            opacity: 0; 
+            transform: translateY(20px); 
+            transition: opacity var(--fade-speed) ease, transform var(--fade-speed) ease;
+        }
+
+        .hidden-text.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto; 
+        }
+
+        /* Typography & Layout Spacing */
+        .hidden-text header { margin-bottom: 50px; display: flex; flex-direction: column; gap: 8px; }
+        .hidden-text h1 { font-size: 24px; letter-spacing: 2px; }
+        .hidden-text h2 { font-weight: normal; font-size: 16px; line-height: 1.6; margin-bottom: 40px; }
+        
+        .artist-list { display: flex; flex-direction: column; gap: 15px; }
+        .artist-list details { padding: 0; }
+        
+        summary {
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            list-style: none;
+            outline: none;
+        }
+        summary::-webkit-details-marker { display: none; }
+        
+        summary::before {
+            content: '+ ';
+            color: #888;
+            margin-right: 5px;
+            font-family: monospace;
+        }
+        details[open] summary::before { content: '- '; }
+        
+        details p {
+            margin-top: 8px; 
+            color: #555;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo">
+        <img id="logo-img-base" src="assets/LOGO crop_NEFELIBATAsmall.png" alt="Nefelibata">
+        <img id="logo-img-overlay" src="assets/LOGO crop_NEFELIBATA PERPETUAsmall.png" alt="Nefelibata Perpetua">
+    </div>
+    
+    <div id="slogan-container"></div>
+</div>
+
+<div id="floating-layer" class="floating-layer">
+    <img src="assets/c1.png" class="float-img" alt="">
+    <img src="assets/c2.png" class="float-img" alt="">
+    <img src="assets/c3.png" class="float-img" alt="">
+    <img src="assets/c4.png" class="float-img" alt="">
+    <img src="assets/c5.png" class="float-img" alt="">
+    <img src="assets/c6.png" class="float-img" alt="">
+</div>
+
+<div class="content-wrapper">
+    <div id="emerging-text" class="hidden-text">
         <header>
-            <h1>joão morais</h1>
-                <i>2024</i>
+            <i>2026</i>
         </header>
-        <main> 
-            <section>
-                <h2 class="except">UPDATES</h2>
-                <section>
-                    <h3>C(H)ORO soundtrack for dance piece w/ Ricardo Nogueira Fernandes</h3>
-                    <i>12-03-2024</i>
-                    <p>C(H)ORO is a dance piece from the dancer Sara Garcia created throughout a series of residencies in portugal and spain, with the participation of João Oliveira and Mariana Barbosa as dancers. The soundtrack was developed in loco in parallel with the work of the dancers with the musician and sound artist Ricardo Fernandes. The results of this work will be performed in Póvoa do Varzim, Gaia and Bilbao over the month of april. </p>
-                </section>
-                <section>
-                    <h3>¡VALHALLA out now on bandcamp!</h3>
-                    <i>13-01-2023</i>
-                    <p>VALHALLA was created between autumn 2017 and winter 2018 and is the result of a commission by MJL for an ambient drone piece focused on sleep and sleep time. the four track album is an exploratory dialogue with the immaterial spectres of sleep, personified by the feedback of input-less delay lines, using the hand-manipulation of different parameters of the delays as the conversational medium. check it out on the link below</p>
-                    <p><a href="https://joaomorais.bandcamp.com/album/valhalla" target="_blank">https://joaomorais.bandcamp.com/album/valhalla</a> </p>
-                </section>
-            </section>
-            <section>
-                <h2>BIO</h2>
-                    <p>João Morais was born in a small fishing village in the north of Portugal, in 1993.</p>
-                    <p>João moved to porto in 2011 where he started his studies on architecture at FAUP. during this period, from 2013 to 2016, he developed design work for the student body association, and in 2015 he was one of the founders of Quinzena, an initiative aiming to question-reform the politics of the current educational system.</p>
-                    <p>in 2016, together with Francisco Craveiro and Miguel Royo, founded Oficina Fumo, an experimental multi-disciplinary practice with a focus on socio-political criticism. he collaborated with the other founding members on an improv performance (<a href="http://cartograma.net/psisla.html" target="_blank">P.S. isla</a>, 2017) and an installation (<a href="http://cartograma.net/ctrl-x.html" target="_blank">ctrl-x</a>, 2016), as well as with João Costa and Manuel Carvalho on two critical architecture design projects (2017 and 2018).</p>
-                    <p>in 2016 João began his professional practice as an architectural designer with a collaboration with Telmo Castro Arq., as well as, later that year, a direct commission for a residential conversion project in Billancourt–Rives de Seine, Paris. he worked as a furniture designer in 2018-2019. from 2019 to 2020 he collaborated on the production of several private and corporate events performing functions such as set design, ux design, production management and design. in 2020 João started collaborating with Vaga Arquitectura as an architect and in 2021 with <a href="https://www.atelierdacosta.com" target="_blank">ATELIERDACOSTA</a>, maintaining an external collaborator role on both practices currently.</p>
-                    <p>a decade after abandoning his introduction to piano and music theory classes, João began his musical practice in 2012. since then he has worked on different projects ranging from a sound fiction in collaboration with Miguel Royo, to a commissioned sound piece focused on sleep and sleep time (later remixed in the form of the Concrete-Experimental album VALHALLA), as well as soundtracks for film commissioned by Nicole Noia and Marta Miranda.</p>
-                    <p>since moving to Porto, João collaborated with individuals such as film-maker and photographer Maria Novo (2017), oboist and musician José Carvalho (2019 - ongoing), as well as with the inventors-architects Beatriz Merouço and João Costa (2018 - ongoing).</p>
-                    <p>~~~~~~</p>
-                    <p>João Morais nasceu numa pequena vila piscatória no norte de Portugal, em 1993.</p>
-                    <p>em 2011, João muda-se para o Porto, onde inicia os seus estudos em arquitectura na FAUP. durante este período, de 2013 a 2016, desenvolve vários trabalhos de design gráfico para a AEFAUP, e em 2015 foi um dos fundadores da Quinzena, uma iniciativa com o objectivo de questionar-reformar as políticas do sistema educativo vigente.</p>
-                    <p>em 2016, em conjunto com Francisco Craveiro e Miguel Royo, fundou a Oficina Fumo, um laboratório de experimentação multidisciplinar focada em crítica sócio-política. Colaborou com os fundadores numa performance (<a href="http://cartograma.net/psisla.html" target="_blank">P.S. isla</a>, 2017) e numa instalação (<a href="http://cartograma.net/ctrl-x.html" target="_blank">ctrl-x</a>, 2016), assim como, com João Costa e Manuel Carvalho, em dois projectos críticos de arquitectura (2017 e 2018).</p>
-                    <p>em 2016, o João iniciou a sua prática profissional como arquitecto numa colaboração com Telmo Castro Arq., e, mais tarde nesse ano, numa comissão directa de um projecto de conversão residencial em BIllancourt-Rives de Seine, Paris. Em 2018 e 2019 trabalhou em design de mobiliário. Em 2019 e 2020 colaborou na produção de vários eventos privados e empresariais em várias funções, tais como, cenografia, design e gestão de produção e ux design. em 2020 João inicia uma colaboração em arquitectura com Vaga Arquitectura e em 2021 com o <a href="https://www.atelierdacosta.com" target="_blank">ATELIERDACOSTA</a>, ligações que actualmente mantém como colaborador externo.</p>
-                    <p>uma década após abandonar as aulas de introdução a piano e formação musical, João inicia a sua prática musical em 2012. Desde então trabalhou em vários projectos, entre os quais uma ficção sonora em colaboração com Miguel Royo no texto e voz, uma comissão de uma peça sobre sono e tempo (mais tarde remisturada na forma do álbum experimental-concrete VALHALLA), assim como bandas sonoras para Marta Miranda e Nicole Naia.</p>
-                    <p>desde a mudança para o Porto, João colaborou com artistas como a realizadora e fotógrafa Maria Novo (2017), o oboísta e músico José Carvalho (2019 - presente), assim como os inventores-arquitectos Beatriz Merouço e João Costa (2018 - presente).</p>
-            </section>
-            <section>
-                <h2>MUSIC & SOUND</h2>
-                <p>>>> 2023 remixed edition of VALHALLA on <a href="https://joaomorais.bandcamp.com/album/valhalla" target="_blank">bandcamp</a></p>
-                <p>>>> 2022 live performance at OLEC on <a href="https://soundcloud.com/joaomorais/live-olec" target="_blank">soundcloud</a></p>
-                <p>>>> 2019 hybrid performance with Manuel Carvalho on <a href="https://joaomorais.bandcamp.com" target="_blank">soundcloud</a></p>
-                <p>>>> 2016 sound fiction with Miguel Royo on <a href="https://www.youtube.com/watch?v=Brd9irzQNI0" target="_blank">youtube</a></p>
-            </section>
-            <section>
-                <h2>ARCHITECTURAL PORTFOLIO</h2>
-                <p> >>> <a href="academicportfolio-projectindex.html" target="_blank">academic portfolio</a></p>
-            </section>
-            <section>
-                <h2>OTHER PLACES</h2>
-                <p>>>> find me on instagram <a href="https://www.instagram.com/joaomorais/" target="_blank">@joaomorais</a> </p>
-                <p>general purpose cv <a href="assets/cv-en.pdf" target="_blank">EN</a></p>
+        
+        <main>
+                     
+            <section class="artist-list">
+                <details>
+                    <summary>Beatriz Blasi - untitled, XXXX-XXXX</summary>
+                    <p>artist description here</p>
+                    <p>artwork description here</p>
+                </details>
+                <details>
+                    <summary>Clarisse Pinto - untitled, XXXX-XXXX</summary>
+                    <p>artist description here</p>
+                    <p>artwork description here</p>
+                </details>
+                <details>
+                    <summary>Francisco Amorim - untitled, XXXX-XXXX</summary>
+                    <p>artist description here</p>
+                    <p>artwork description here</p>
+                </details>
+                <details>
+                    <summary>Gaspar Cohen - untitled, XXXX-XXXX</summary>
+                    <p>artist description here</p>
+                    <p>artwork description here</p>
+                </details>
+                <details>
+                    <summary>Gui Silvestre - untitled, XXXX-XXXX</summary>
+                    <p>artist description here</p>
+                    <p>artwork description here</p>
+                </details>
+                <details>
+                    <summary>José Carvalho - untitled, 2019-2022</summary>
+                    <p>artist description here</p>
+                    <p>artwork description here</p>
+                </details>
+                <details>
+                    <summary>Juliana Campos - untitled, XXXX-XXXX</summary>
+                    <p>artist description here</p>
+                    <p>artwork description here</p>
+                </details>
+                <details>
+                    <summary>Paulo Ávila - untitled, XXXX-XXXX</summary>
+                    <p>artist description here</p>
+                    <p>artwork description here</p>
+                </details>
+                <details>
+                    <summary>Ricardo Nogueira Fernandes - untitled, XXXX-XXXX</summary>
+                    <p>artist description here</p>
+                    <p>artwork description here</p>
+                </details>
             </section>
         </main>
-    </body>
+    </div>
+</div>
+
+<script>
+    const slogan = "nefelibata is a multi-disciplinar curated archive of works by an orbital network of individuals ❊ open-access space of preservation-autonomy-freedom • ";
+    const sloganContainer = document.getElementById('slogan-container');
+    const logoContainer = document.querySelector('.logo');
+    const mainContainer = document.querySelector('.container');
+    const emergingText = document.getElementById('emerging-text'); 
+    const floatingLayer = document.getElementById('floating-layer'); // The new Layer 2
+    
+    const reversedLetters = slogan.split('').reverse();
+    const totalChars = reversedLetters.length;
+
+    reversedLetters.forEach((char, i) => {
+        const span = document.createElement('span');
+        span.className = 'char';
+        span.innerText = char === " " ? "\u00A0" : char;
+        
+        span.style.animationDelay = `calc((${i} / ${totalChars}) * -${getComputedStyle(document.documentElement).getPropertyValue('--speed')})`;
+        
+        sloganContainer.appendChild(span);
+    });
+
+    mainContainer.addEventListener('click', () => {
+        logoContainer.classList.add('swapped');
+        mainContainer.style.cursor = 'default'; 
+        document.documentElement.style.overflowY = 'auto';
+        document.body.style.overflowY = 'auto';
+        
+        floatingLayer.classList.add('visible');
+        emergingText.classList.add('visible');
+    }, { once: true });
+</script>
+
+</body>
 </html>
