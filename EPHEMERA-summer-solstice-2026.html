@@ -6,32 +6,12 @@
     <title>NEFELIBATA PERPETUA</title>
     <style>
         :root {
-            /* Ring 1 (Radius: 150) */
-            --path-1: path("M 0,0 m -150, 0 a 150,150 0 1,0 300,0 a 150,150 0 1,0 -300,0");
             --speed-1: 30s;
-
-            /* Ring 2 (Radius: 200) */
-            --path-2: path("M 0,0 m -200, 0 a 200,200 0 1,0 400,0 a 200,200 0 1,0 -400,0");
             --speed-2: 40s;
-
-            /* Ring 3 (Radius: 250) */
-            --path-3: path("M 0,0 m -250, 0 a 250,250 0 1,0 500,0 a 250,250 0 1,0 -500,0");
             --speed-3: 50s;
-
-            /* Ring 4 (Radius: 300) */
-            --path-4: path("M 0,0 m -300, 0 a 300,300 0 1,0 600,0 a 300,300 0 1,0 -600,0");
             --speed-4: 60s;
-
-            /* Ring 5 (Radius: 350) */
-            --path-5: path("M 0,0 m -350, 0 a 350,350 0 1,0 700,0 a 350,350 0 1,0 -700,0");
             --speed-5: 70s;
-
-            /* Ring 6 (Radius: 400) */
-            --path-6: path("M 0,0 m -400, 0 a 400,400 0 1,0 800,0 a 400,400 0 1,0 -800,0");
             --speed-6: 80s;
-
-            /* Ring 7 (Radius: 450) */
-            --path-7: path("M 0,0 m -450, 0 a 450,450 0 1,0 900,0 a 450,450 0 1,0 -900,0");
             --speed-7: 90s;
         }
 
@@ -52,105 +32,90 @@
             transform: scale(0.85); 
         }
 
-        .logo {
-            position: relative;
-            width: 150px; 
-            height: 200px;
-            z-index: 10;
-            display: flex; 
-            justify-content: center; 
+        .ring {
+            position: absolute;
+            width: 0;
+            height: 0;
+            display: flex;
+            justify-content: center;
             align-items: center;
+            will-change: transform; 
         }
 
-        .logo img {
-            max-width: 50%;
-            height: auto;
+        /* All rings now use the exact same forward animation */
+        .ring-1 { animation: spin var(--speed-1) linear infinite; }
+        .ring-2 { animation: spin var(--speed-2) linear infinite; }
+        .ring-3 { animation: spin var(--speed-3) linear infinite; }
+        .ring-4 { animation: spin var(--speed-4) linear infinite; }
+        .ring-5 { animation: spin var(--speed-5) linear infinite; }
+        .ring-6 { animation: spin var(--speed-6) linear infinite; }
+        .ring-7 { animation: spin var(--speed-7) linear infinite; }
+
+        /* The keyframes dictate the counter-clockwise direction (-360deg) */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(-360deg); }
         }
 
         .char {
             position: absolute;
-            top: 50%;
-            left: 50%;
             font-size: 14px;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #333;
             white-space: nowrap;
-            offset-rotate: 0deg; 
-        }
-
-        .ring-1 { offset-path: var(--path-1); animation: move var(--speed-1) linear infinite; }
-        .ring-2 { offset-path: var(--path-2); animation: move var(--speed-2) linear infinite; }
-        .ring-3 { offset-path: var(--path-3); animation: move var(--speed-3) linear infinite; }
-        .ring-4 { offset-path: var(--path-4); animation: move var(--speed-4) linear infinite; }
-        .ring-5 { offset-path: var(--path-5); animation: move var(--speed-5) linear infinite; }
-        .ring-6 { offset-path: var(--path-6); animation: move var(--speed-6) linear infinite; }
-        .ring-7 { offset-path: var(--path-7); animation: move var(--speed-7) linear infinite; }
-
-        @keyframes move {
-            0% { offset-distance: 100%; }
-            100% { offset-distance: 0%; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="logo">
-        <img src="assets/LOGO-crop_NEFELIBATAsmall.png" alt="Logo">
-    </div>
-    
-    <div id="ring-container-1"></div>
-    <div id="ring-container-2"></div>
-    <div id="ring-container-3"></div>
-    <div id="ring-container-4"></div>
-    <div id="ring-container-5"></div>
-    <div id="ring-container-6"></div>
-    <div id="ring-container-7"></div>
+    <div id="ring-container-1" class="ring ring-1"></div>
+    <div id="ring-container-2" class="ring ring-2"></div>
+    <div id="ring-container-3" class="ring ring-3"></div>
+    <div id="ring-container-4" class="ring ring-4"></div>
+    <div id="ring-container-5" class="ring ring-5"></div>
+    <div id="ring-container-6" class="ring ring-6"></div>
+    <div id="ring-container-7" class="ring ring-7"></div>
 </div>
 
 <script>
-    // Array containing the distinct text for each of the 7 rings.
-    // Index 0 maps to ring 1 (innermost), Index 6 maps to ring 7 (outermost).
-    // I added filler text here, but you can swap these out with your actual content.
     const ringTexts = [
         " ❊ Joao Morais ❊               ",
         " ❊ Francisco Amorim ❊                  ",
         " ❊ Gaspar Cohen ❊                                  ",
-        " ❊ Gui Silvestre ❊                                               ",
-        " ❊ AMA+HS ❊                                                                                                                 ",
+        " ❊ Gui Silvestre ❊                                             ",
+        " ❊ AMA+HS ❊                                                                                                           ",
         " ❊ MUSIC FOR TOMBAK & SYNTH by Cinna Peyghamy <<< album listening session >>> ❊              ",
         " ❊ Clarisse Pinto's SAD GIRL RADIO SHOW ❊                                                                   "
     ];
 
-    // Reusable function to generate the spans, now accepting 'text' as a parameter
-    function buildTextRing(containerId, ringClass, speedVariable, text) {
+    const radii = [150, 200, 250, 300, 350, 400, 450];
+
+    function buildTextRing(containerId, text, radius) {
         const container = document.getElementById(containerId);
         
-        // The reversing and counting must happen INSIDE this function now,
-        // because every ring has a different string of a different length.
-        const reversedLetters = text.split('').reverse();
-        const totalChars = reversedLetters.length;
+        const chars = text.split('');
+        const totalChars = chars.length;
+        const angleIncrement = 360 / totalChars;
         
-        reversedLetters.forEach((char, i) => {
+        chars.forEach((char, i) => {
             const span = document.createElement('span');
-            span.className = `char ${ringClass}`;
-            span.innerText = char === " " ? "\u00A0" : char;
+            span.className = 'char';
+            span.innerHTML = char === " " ? "&nbsp;" : char;
             
-            // Distribute animation delay evenly based on THIS string's total characters
-            span.style.animationDelay = `calc((${i} / ${totalChars}) * -1 * var(${speedVariable}))`;
+            const angle = i * angleIncrement;
+            
+            span.style.transform = `rotate(${angle}deg) translateY(-${radius}px)`;
             
             container.appendChild(span);
         });
     }
 
-    // Build all 7 rings using a loop, pulling the correct text from the array
     for (let i = 1; i <= 7; i++) {
-        // Arrays are 0-indexed, so we use i - 1 to get the correct string
-        buildTextRing(`ring-container-${i}`, `ring-${i}`, `--speed-${i}`, ringTexts[i - 1]);
+        buildTextRing(`ring-container-${i}`, ringTexts[i - 1], radii[i - 1]);
     }
-
 </script>
 
 </body>
