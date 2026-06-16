@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEFELIBATA PERPETUA</title>
+    <title>NEFELIBATA EPHEMERA - SummerSolstice 2026</title>
     <style>
         :root {
             --speed-1: 30s;
@@ -29,12 +29,19 @@
             display: flex; 
             justify-content: center; 
             align-items: center;
-            /* Default scale, will be overridden by JS on smaller screens */
             transform: scale(0.85); 
-            /* Ensures smooth scaling if resizing the window manually */
             transition: transform 0.2s ease-out; 
         }
 
+        /* --- Center Logo Styling --- */
+        .center-logo {
+            position: absolute;
+            width: 220px; /* Fits comfortably inside the 300px diameter of the innermost ring */
+            height: auto;
+            z-index: 10;
+        }
+
+        /* --- Ring Styling --- */
         .ring {
             position: absolute;
             width: 0;
@@ -72,6 +79,73 @@
 <body>
 
 <div class="container">
+    
+    <svg class="center-logo" viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg">
+        <path id="curve-bottom" d="M 50,227 Q 250,347 450,227" fill="transparent" />
+        <path id="curve-nefelibata" d="M 50,227 Q 250,347 450,227" fill="transparent">
+            <animate 
+                attributeName="d" 
+                dur="32.5s" 
+                repeatCount="indefinite"
+                values="
+                    M 50,227 Q 250,347 450,227; 
+                    M 50,227 Q 250,347 450,227; 
+                    M 50,227 Q 250,107 450,227; 
+                    M 50,227 Q 250,107 450,227; 
+                    M 50,227 Q 250,347 450,227; 
+                    M 50,227 Q 250,107 450,227; 
+                    M 50,227 Q 250,107 450,227; 
+                    M 50,227 Q 250,347 450,227;
+                    M 50,227 Q 250,107 450,227;
+                    M 50,227 Q 250,107 450,227;
+                    M 50,227 Q 250,347 450,227
+                "
+                keyTimes="0; 0.0923; 0.1231; 0.5846; 0.5923; 0.6000; 0.6308; 0.6385; 0.6462; 0.9538; 1"
+                calcMode="spline"
+                keySplines="
+                    0 0 1 1; 
+                    0.42 0 0.58 1; 
+                    0 0 1 1; 
+                    0.42 0 0.58 1; 
+                    0.42 0 0.58 1; 
+                    0 0 1 1; 
+                    0.42 0 0.58 1;
+                    0.42 0 0.58 1;
+                    0 0 1 1;
+                    0.42 0 0.58 1
+                " 
+            />
+        </path>
+        <g font-family="'Helvetica', 'Arial', sans-serif" font-size="54px" font-weight="600" fill="#333" letter-spacing="1">
+            <text opacity="0">
+                <animate 
+                    attributeName="opacity" 
+                    dur="32.5s" 
+                    repeatCount="indefinite"
+                    values="0; 0; 1; 1; 0; 1; 1; 0; 1; 1; 0"
+                    keyTimes="0; 0.0923; 0.1231; 0.5846; 0.5923; 0.6000; 0.6308; 0.6385; 0.6462; 0.9538; 1"
+                    calcMode="spline"
+                    keySplines="
+                        0 0 1 1; 
+                        0.42 0 0.58 1; 
+                        0 0 1 1; 
+                        0.42 0 0.58 1; 
+                        0.42 0 0.58 1; 
+                        0 0 1 1; 
+                        0.42 0 0.58 1;
+                        0.42 0 0.58 1;
+                        0 0 1 1;
+                        0.42 0 0.58 1
+                    " 
+                />
+                <textPath href="#curve-bottom" startOffset="50%" text-anchor="middle">EPHEMERA</textPath>
+            </text>
+            <text>
+                <textPath href="#curve-nefelibata" startOffset="50%" text-anchor="middle">NEFELIBATA</textPath>
+            </text>
+        </g>
+    </svg>
+
     <div id="ring-container-1" class="ring ring-1"></div>
     <div id="ring-container-2" class="ring ring-2"></div>
     <div id="ring-container-3" class="ring ring-3"></div>
@@ -118,26 +192,15 @@
         buildTextRing(`ring-container-${i}`, ringTexts[i - 1], radii[i - 1]);
     }
 
-    // --- Responsive Scaling Logic ---
     function adjustScale() {
         const container = document.querySelector('.container');
         const screenWidth = window.innerWidth;
-        
-        // The total diameter of the outermost ring is 900px (radius 450 * 2).
-        // 70% of 900px is 630px. 
-        // This math ensures the scale shrinks exactly enough so that 630px fits into the current screen width.
         const mobileScale = screenWidth / 630;
-        
-        // Math.min forces it to never exceed your preferred desktop size of 0.85
         const finalScale = Math.min(0.85, mobileScale);
-        
         container.style.transform = `scale(${finalScale})`;
     }
 
-    // Run immediately on load
     adjustScale();
-    
-    // Listen for window resizing (e.g., rotating a phone from portrait to landscape)
     window.addEventListener('resize', adjustScale);
 
 </script>
