@@ -8,7 +8,7 @@
         :root {
             --path: path("M 0,0 m -320, 0 a 320,180 0 1,0 640,0 a 320,180 0 1,0 -640,0");
             --speed: 35s;
-            --fade-speed: 0.7s; 
+            --fade-speed: 0.8s; 
         }
 
         body, html {
@@ -16,7 +16,7 @@
             width: 100%; height: 100%;
             background-color: #ffffff;
             font-family: 'Helvetica', 'Arial', sans-serif;
-            overflow: hidden; /* Locks scrolling before the click */
+            overflow: hidden; 
         }
 
         /* =========================================
@@ -32,8 +32,6 @@
             width: 380px; 
             height: 380px;
             cursor: pointer; 
-            
-            /* The Fixes: Locks everything inside this to Layer 1 */
             z-index: 1; 
             isolation: isolate; 
         }
@@ -45,29 +43,24 @@
             display: flex; 
             justify-content: center; 
             align-items: center;
-            z-index: 1; /* Sits behind the spinning text */
+            z-index: 1; 
         }
 
         @media (max-width: 900px) {
             .logo { transform: scale(calc(100vw / 900)); }
         }
 
-        .logo img {
-            position: absolute; 
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%); 
-            max-width: 100%; height: auto;
-            transition: opacity var(--fade-speed) ease; 
+        .center-logo {
+            width: 360px; 
+            max-width: 100%;
+            height: auto;
+            z-index: 10;
         }
-
-        #logo-img-overlay { opacity: 0; }
-        .logo.swapped #logo-img-base { opacity: 0; }
-        .logo.swapped #logo-img-overlay { opacity: 1; }
 
         .char {
             position: absolute;
             top: 50%; left: 50%;
-            z-index: 2; /* Sits over the logo, but strictly trapped inside Layer 1 */
+            z-index: 2; 
             font-size: 14px;
             font-weight: bold;
             text-transform: uppercase;
@@ -85,54 +78,90 @@
         }
 
         /* =========================================
-   LAYER 2: MIDDLE (FULL-WIDTH FLOATING ASSETS c1-c6)
-   ========================================= */
-.floating-layer {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    
-    /* Forced high above Layer 1 */
-    z-index: 50; 
-    
-    pointer-events: none; /* Let clicks pass through to the container */
-    overflow: visible;
-    
-    /* FIX 1: Set initial opacity to 0 so it stays hidden until the click */
-    opacity: 0; 
-    transition: opacity var(--fade-speed) ease;
-}
+           LAYER 2: MIDDLE (VECTOR SMOKE / FOG)
+           ========================================= */
+        .floating-layer {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 50; 
+            pointer-events: none; 
+            overflow: hidden;
+            
+            /* Hidden initially */
+            opacity: 0; 
+            transition: opacity var(--fade-speed) ease;
+            
+            /* REDUCED: Blur dropped from 6px to 4px for more clarity */
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            
+            /* REDUCED: Base veil opacity dropped from 0.4 to 0.15 */
+            background: rgba(255, 255, 255, 0.15); 
+        }
 
-.floating-layer.visible {
-    opacity: 0.85;
-}
+        .floating-layer.visible {
+            opacity: 1;
+        }
 
-.float-img {
-    position: absolute;
-    top: 0;
-    left: 0; 
-    width: 100%; 
-    height: auto; 
-    
-    /* FIX 2: Explicit animation properties to prevent the 0s shorthand bug */
-    animation-name: floatUp;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-}
+        /* Base styling for the abstract smoke clouds */
+        .fog-blob {
+            position: absolute;
+            border-radius: 50%;
+            
+            /* REDUCED: The center core of the clouds dropped from 0.95 alpha to 0.5 alpha */
+            background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 70%);
+            filter: blur(60px); 
+            will-change: transform;
+        }
 
-@keyframes floatUp {
-    from { transform: translateY(110vh); } 
-    to { transform: translateY(-110vh); }  
-}
+        /* Positioning and unique drift animations for organic chaos */
+        .fog-1 {
+            width: 120vw; height: 120vw;
+            bottom: -40vh; left: -20vw;
+            animation: drift-1 22s infinite alternate ease-in-out;
+            /* Added base opacity drop to fog-1 */
+            opacity: 0.7; 
+        }
+        .fog-2 {
+            width: 100vw; height: 100vw;
+            top: -20vh; right: -20vw;
+            animation: drift-2 28s infinite alternate ease-in-out;
+            /* REDUCED: Dropped from 0.9 to 0.5 */
+            opacity: 0.5;
+        }
+        .fog-3 {
+            width: 150vw; height: 80vh;
+            top: 10vh; left: -30vw;
+            animation: drift-3 35s infinite alternate ease-in-out;
+            /* REDUCED: Dropped from 0.8 to 0.4 */
+            opacity: 0.4;
+        }
+        .fog-4 {
+            width: 90vw; height: 90vh;
+            bottom: -10vh; right: -10vw;
+            animation: drift-4 25s infinite alternate ease-in-out;
+            /* REDUCED: Dropped from 0.85 to 0.45 */
+            opacity: 0.45;
+        }
 
-.float-img:nth-child(1) { animation-duration: 145s; animation-delay: -10s; }
-/* .float-img:nth-child(2) { animation-duration: 65s; animation-delay: -30s; }
-.float-img:nth-child(3) { animation-duration: 50s; animation-delay: -5s; }
-.float-img:nth-child(4) { animation-duration: 75s; animation-delay: -40s; }
-.float-img:nth-child(5) { animation-duration: 140s; animation-delay: -15s; }
-.float-img:nth-child(6) { animation-duration: 55s; animation-delay: -25s; }
-      
-
+        @keyframes drift-1 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(8vw, -12vh) scale(1.1); }
+        }
+        @keyframes drift-2 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-12vw, 8vh) scale(1.15); }
+        }
+        @keyframes drift-3 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(10vw, 5vh) scale(0.95); }
+        }
+        @keyframes drift-4 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-15vw, -10vh) scale(1.2); }
+        }
+              
 
         /* =========================================
            LAYER 3: TOP (SCROLLABLE TEXT OVERLAY)
@@ -144,10 +173,7 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            
-            /* Forced highest layer */
             z-index: 100; 
-            
             pointer-events: none; 
         }
 
@@ -156,12 +182,10 @@
             max-width: 800px;
             margin-top: 10vh; 
             margin-bottom: 10vh; 
-            
             text-align: center;
             font-size: 16px;
             color: #333;
             line-height: 1.5;
-            
             opacity: 0; 
             transform: translateY(20px); 
             transition: opacity var(--fade-speed) ease, transform var(--fade-speed) ease;
@@ -173,7 +197,6 @@
             pointer-events: auto; 
         }
 
-        /* Typography & Layout Spacing */
         .hidden-text header { margin-bottom: 50px; display: flex; flex-direction: column; gap: 8px; }
         .hidden-text h1 { font-size: 24px; letter-spacing: 2px; }
         .hidden-text h2 { font-weight: normal; font-size: 16px; line-height: 1.6; margin-bottom: 40px; }
@@ -191,40 +214,67 @@
         }
         summary::-webkit-details-marker { display: none; }
         
-        summary::before {
-            content: '+ ';
-            color: #888;
-            margin-right: 5px;
-            font-family: monospace;
-        }
+        summary::before { content: '+ '; color: #888; margin-right: 5px; font-family: monospace; }
         details[open] summary::before { content: '- '; }
         
-        details p {
-            margin-top: 8px; 
-            color: #555;
-            font-size: 14px;
-            line-height: 1.4;
-        }
+        details p { margin-top: 8px; color: #555; font-size: 14px; line-height: 1.4; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="logo">
-        <img id="logo-img-base" src="assets/LOGO crop_NEFELIBATAsmall.png" alt="Nefelibata">
-        <img id="logo-img-overlay" src="assets/LOGO crop_NEFELIBATA PERPETUAsmall.png" alt="Nefelibata Perpetua">
+        
+        <svg class="center-logo" viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg">
+            <path id="curve-bottom" d="M 50,227 Q 250,347 450,227" fill="transparent" />
+            
+            <path id="curve-nefelibata" d="M 50,227 Q 250,347 450,227" fill="transparent">
+                <animate 
+                    id="anim-path" 
+                    attributeName="d" 
+                    begin="indefinite" 
+                    dur="1.5s"
+                    from="M 50,227 Q 250,347 450,227" 
+                    to="M 50,227 Q 250,107 450,227"
+                    fill="freeze" 
+                    calcMode="spline" 
+                    keyTimes="0; 1" 
+                    keySplines="0.42 0 0.58 1" 
+                />
+            </path>
+            
+            <g font-family="'Helvetica', 'Arial', sans-serif" font-size="54px" font-weight="600" fill="#333" letter-spacing="1">
+                <text opacity="0">
+                    <animate 
+                        id="anim-opacity" 
+                        attributeName="opacity" 
+                        begin="indefinite" 
+                        dur="1.5s"
+                        from="0" 
+                        to="1" 
+                        fill="freeze" 
+                        calcMode="spline" 
+                        keyTimes="0; 1" 
+                        keySplines="0.42 0 0.58 1" 
+                    />
+                    <textPath href="#curve-bottom" startOffset="50%" text-anchor="middle">PERPETUA</textPath>
+                </text>
+                <text>
+                    <textPath href="#curve-nefelibata" startOffset="50%" text-anchor="middle">NEFELIBATA</textPath>
+                </text>
+            </g>
+        </svg>
+
     </div>
     
     <div id="slogan-container"></div>
 </div>
 
 <div id="floating-layer" class="floating-layer">
-    <img src="assets/c1.png" class="float-img" alt="">
-    <img src="assets/c2.png" class="float-img" alt="">
-    <img src="assets/c3.png" class="float-img" alt="">
-    <img src="assets/c4.png" class="float-img" alt="">
-    <img src="assets/c5.png" class="float-img" alt="">
-    <img src="assets/c6.png" class="float-img" alt="">
+    <div class="fog-blob fog-1"></div>
+    <div class="fog-blob fog-2"></div>
+    <div class="fog-blob fog-3"></div>
+    <div class="fog-blob fog-4"></div>
 </div>
 
 <div class="content-wrapper">
@@ -234,7 +284,6 @@
         </header>
         
         <main>
-                     
             <section class="artist-list">
                 <details>
                     <summary>Clarisse Pinto - untitled, XXXX-XXXX</summary>
@@ -269,10 +318,13 @@
 <script>
     const slogan = "nefelibata is a multi-disciplinar curated archive of works by an orbital network of individuals ❊ open-access space of preservation-autonomy-freedom • ";
     const sloganContainer = document.getElementById('slogan-container');
-    const logoContainer = document.querySelector('.logo');
     const mainContainer = document.querySelector('.container');
     const emergingText = document.getElementById('emerging-text'); 
-    const floatingLayer = document.getElementById('floating-layer'); // The new Layer 2
+    const floatingLayer = document.getElementById('floating-layer');
+    
+    // SVG Animation elements
+    const animPath = document.getElementById('anim-path');
+    const animOpacity = document.getElementById('anim-opacity');
     
     const reversedLetters = slogan.split('').reverse();
     const totalChars = reversedLetters.length;
@@ -281,18 +333,21 @@
         const span = document.createElement('span');
         span.className = 'char';
         span.innerText = char === " " ? "\u00A0" : char;
-        
         span.style.animationDelay = `calc((${i} / ${totalChars}) * -${getComputedStyle(document.documentElement).getPropertyValue('--speed')})`;
-        
         sloganContainer.appendChild(span);
     });
 
     mainContainer.addEventListener('click', () => {
-        logoContainer.classList.add('swapped');
+        // Trigger the SVG morph and fade animations
+        animPath.beginElement();
+        animOpacity.beginElement();
+        
+        // UI state changes
         mainContainer.style.cursor = 'default'; 
         document.documentElement.style.overflowY = 'auto';
         document.body.style.overflowY = 'auto';
         
+        // Trigger Vector Fog & Text
         floatingLayer.classList.add('visible');
         emergingText.classList.add('visible');
     }, { once: true });
